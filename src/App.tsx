@@ -83,7 +83,7 @@ function DataLoader() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <SupabaseDiagnostic />
       <DataLoader />
       <Routes>
