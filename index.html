@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Runima Compendium</title>
+    <script>
+      // Decode the redirect from 404.html and restore the original URL.
+      (function () {
+        var p = new URLSearchParams(window.location.search).get('p');
+        if (p) {
+          var decoded = '/' + decodeURIComponent(p).replace(/&q=(.*)$/, '?$1');
+          window.history.replaceState(null, '', decoded);
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {

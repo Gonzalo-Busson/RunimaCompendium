@@ -116,7 +116,32 @@ async function main() {
   const prompt = hookInput.prompt || hookInput.command || toolInput
     || process.env.PROMPT || process.env.TOOL_INPUT_command || args.join(' ') || '';
 
+// Active agent state file — written on SubagentStart, cleared on SubagentStop
+const ACTIVE_AGENT_FILE = path.join(helpersDir, '..', '.active-agent');
+
+function setActiveAgent(name) {
+  try { fs.writeFileSync(ACTIVE_AGENT_FILE, name, 'utf8'); } catch (_) {}
+}
+function clearActiveAgent() {
+  try { if (fs.existsSync(ACTIVE_AGENT_FILE)) fs.unlinkSync(ACTIVE_AGENT_FILE); } catch (_) {}
+}
+
 const handlers = {
+  'status': () => {
+    // SubagentStart — display which agent is being invoked
+    const agentType = hookInput.subagent_type || hookInput.subagentType
+      || toolInput.subagent_type || toolInput.subagentType || '';
+    const agentName = hookInput.name || toolInput.name || '';
+    const description = hookInput.description || toolInput.description || '';
+
+    const label = agentType || agentName || 'agent';
+    const detail = description ? ` — ${description.substring(0, 60)}${description.length > 60 ? '…' : ''}` : '';
+    console.log(`\x1b[1;35m[AGENT]\x1b[0m \x1b[1m► ${label}\x1b[0m${detail}`);
+
+    // Persist so statusline can display the active agent
+    setActiveAgent(label);
+  },
+
   'route': () => {
     // Inject ranked intelligence context before routing
     if (intelligence && intelligence.getContext) {
@@ -234,6 +259,8 @@ const handlers = {
   },
 
   'post-task': () => {
+    // SubagentStop — clear the active agent display
+    clearActiveAgent();
     // Implicit success feedback for intelligence
     if (intelligence && intelligence.feedback) {
       try {

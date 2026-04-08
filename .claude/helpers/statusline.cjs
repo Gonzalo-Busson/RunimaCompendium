@@ -596,6 +596,14 @@ function progressBar(current, total) {
   return '[' + '\u25CF'.repeat(filled) + '\u25CB'.repeat(width - filled) + ']';
 }
 
+function getActiveAgent() {
+  try {
+    const p = path.join(CWD, '.claude', '.active-agent');
+    if (fs.existsSync(p)) return fs.readFileSync(p, 'utf8').trim();
+  } catch { /* ignore */ }
+  return '';
+}
+
 function generateStatusline() {
   const git = getGitInfo();
   // Prefer model name from Claude Code stdin data, fallback to file-based detection
@@ -658,6 +666,11 @@ function generateStatusline() {
   // Show cost from Claude Code stdin if available
   if (costInfo && costInfo.costUsd > 0) {
     header += '  ' + c.dim + '\u2502' + c.reset + '  ' + c.brightYellow + '$' + costInfo.costUsd.toFixed(2) + c.reset;
+  }
+  // Show active agent if one is running
+  const activeAgent = getActiveAgent();
+  if (activeAgent) {
+    header += '  ' + c.dim + '\u2502' + c.reset + '  ' + c.brightPurple + '\u25BA ' + activeAgent + c.reset;
   }
   lines.push(header);
 
