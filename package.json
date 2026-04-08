@@ -22,7 +22,6 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@rolldown/binding-darwin-x64": "^1.0.0-rc.13",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
